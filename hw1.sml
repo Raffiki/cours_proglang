@@ -22,10 +22,9 @@ fun is_older (dt1: int * int * int, dt2: int * int * int) =
 fun number_in_month (dts: (int * int * int) list, m: int) =
     if null dts 
     then 0 
-    else 
-        if (#2 (hd dts) <> m) 
-        then number_in_month (tl dts, m) 
-        else 1 + number_in_month (tl dts, m)
+    else if (#2 (hd dts) <> m) 
+    then number_in_month (tl dts, m) 
+    else 1 + number_in_month (tl dts, m)
 
 
 (*val number_in_months = fn : (int * int * int) list * int list -> int*)
@@ -39,10 +38,9 @@ fun number_in_months (dts: (int * int * int) list, ms: int list) =
 fun dates_in_month (dts: (int * int * int) list, m: int) =
     if null dts 
     then []
-    else 
-        if (#2 (hd dts) <> m) 
-        then dates_in_month (tl dts, m) 
-        else [hd dts] :: dates_in_month (tl dts, m)
+    else if (#2 (hd dts) <> m) 
+    then dates_in_month (tl dts, m) 
+    else [hd dts] :: dates_in_month (tl dts, m)
 
 
 (*val dates_in_months = fn : (int * int * int) list * int list -> (int * int * int) list*)
@@ -63,36 +61,23 @@ fun date_to_string (dt: (int * int * int)) =
     let 
         val year = Int.toString(#1 dt)
         val day = Int.toString(#3 dt)
-
         val months = [
-            "January",
-            "February",
-            "March", 
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November", 
-            "December"
+            "January", "February", "March", "April", "May", "June", "July",
+            "August", "September", "October", "November", "December"
         ]
     in
         get_nth(months, #2 dt) ^ " " ^ day ^ " " ^ year
     end
 
 
-fun number_before_reaching_sum_helper(sum: int, xs: int list, cnt: int) =
-    if sum - hd xs <= 0 
-    then cnt
-    else number_before_reaching_sum_helper(sum - hd xs, tl xs, cnt + 1)
-
-
 (*val number_before_reaching_sum = fn : int * int list -> int*)
 fun number_before_reaching_sum(sum: int, xs: int list) =
-    number_before_reaching_sum_helper(sum, xs, 0)
-                                   
+    if null xs
+    then  0
+    else if sum - hd xs <= 0 
+    then 0
+    else 1 + number_before_reaching_sum(sum - hd xs, tl xs)
+
 
 (*val what_month = fn : int -> int*)
 fun what_month(day: int) =
@@ -105,23 +90,17 @@ fun month_range(day1: int, day2: int) =
     then []
     else what_month(day1) :: month_range(1 + day1, day2)
 
-
-fun oldest_helper (ds: (int * int * int) list, oldest : (int * int * int)) =
-    if null ds 
-    then oldest
-    else 
-        if is_older (hd ds, oldest) 
-        then oldest_helper(tl ds, hd ds)
-        else oldest_helper(tl ds, oldest)
-    
- 
- datatype 'a option = NONE | SOME of 'a;                        
-
-(*val oldest = fn : (int * int * int) list -> (int * int * int) option*)
-fun oldest (ds: (int * int * int) ) option =
+(* fn : (int * int * int) list -> int option *)
+fun oldest(ds: (int * int * int) list) =
     if null ds 
     then NONE
-    else SOME oldest_helper(tl ds, hd ds)
+    else
+        let val test = oldest(tl ds)
+        in
+            if isSome test andalso is_older (valOf test, hd ds)
+            then test
+            else SOME (hd ds)
+        end
     
 
 
