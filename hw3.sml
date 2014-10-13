@@ -120,3 +120,5 @@ fun match (v, p) =
       | _ => NONE
 
 (*val first_match = fn : valu -> pattern list -> (string * valu) list option*)
+fun first_match (v, ps: pattern list) =
+    (SOME(first_answer (fn (p) => match(v, p)) ps)) handle NoAnswer => NONE
