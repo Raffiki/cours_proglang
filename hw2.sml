@@ -70,3 +70,24 @@ fun card_value c =
      | Jack => 10
      | Num(n) => n
 
+fun remove_card (cs, c, e) =
+    let
+        fun loop (prev, []) = raise e
+          | loop (prev, c'::cs) = if c' = c
+                                 then prev @ cs
+                                 else loop (prev @ [c'],  cs)
+    in 
+        loop ([], cs)
+    end
+        
+
+fun all_same_color [] = true
+  | all_same_color (c'::cs) = 
+    let 
+        fun loop ([], color) = true
+          | loop (c::cs', color) = if card_color c = color 
+                                   then loop (cs', color)
+                                   else false
+    in 
+        loop (cs, card_color(c'))
+    end 
